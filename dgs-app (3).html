@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="DGS Boss">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%237c3aed'/><text y='.9em' font-size='75' x='12'>🎮</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%237c3aed'/><text y='.9em' font-size='75' x='12'>🎮</text></svg>">
+<title>DGS Boss 🎮</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d1a;
+    --card: #161628;
+    --card2: #1e1e38;
+    --accent: #7c3aed;
+    --accent2: #a855f7;
+    --gold: #fbbf24;
+    --green: #10b981;
+    --red: #ef4444;
+    --blue: #3b82f6;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --border: rgba(124,58,237,0.25);
+    --glow: 0 0 20px rgba(124,58,237,0.4);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    max-width: 480px;
+    margin: 0 auto;
+    position: relative;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    top: -200px; left: -200px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(124,58,237,0.15) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── SCREENS ── */
+  .screen { display: none; min-height: 100vh; padding: 20px 16px 100px; position: relative; z-index: 1; animation: fadeIn 0.3s ease; }
+  .screen.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+
+  /* ── BOTTOM NAV ── */
+  .nav {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 480px;
+    background: rgba(22,22,40,0.95);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border);
+    display: flex; z-index: 100;
+  }
+  .nav-btn {
+    flex: 1; padding: 12px 4px 16px;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    background: none; border: none; color: var(--muted);
+    font-family: 'Nunito', sans-serif; font-size: 10px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s; position: relative;
+  }
+  .nav-btn.active { color: var(--accent2); }
+  .nav-btn.active::before {
+    content: '';
+    position: absolute; top: 0; left: 20%; right: 20%;
+    height: 2px; background: var(--accent2);
+    border-radius: 0 0 4px 4px;
+  }
+  .nav-icon { font-size: 22px; line-height: 1; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .card-shine {
+    background: linear-gradient(135deg, var(--card) 0%, var(--card2) 100%);
+    border: 1px solid rgba(168,85,247,0.3);
+    box-shadow: var(--glow);
+  }
+
+  /* ── BUTTONS ── */
+  .btn {
+    width: 100%; padding: 14px;
+    border: none; border-radius: 12px;
+    font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 16px;
+    cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white;
+    box-shadow: 0 4px 15px rgba(124,58,237,0.4);
+  }
+  .btn-primary:active { transform: scale(0.97); }
+  .btn-outline {
+    background: transparent;
+    border: 2px solid var(--border);
+    color: var(--text);
+  }
+  .btn-green { background: var(--green); color: white; box-shadow: 0 4px 15px rgba(16,185,129,0.3); }
+  .btn-sm {
+    padding: 10px 18px; width: auto; font-size: 14px; border-radius: 10px;
+  }
+
+  /* ── HOME SCREEN ── */
+  .home-header { text-align: center; padding: 24px 0 16px; }
+  .home-logo { font-size: 40px; margin-bottom: 8px; }
+  .home-title { font-size: 28px; font-weight: 900; background: linear-gradient(135deg, var(--accent2), var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .home-sub { color: var(--muted); font-size: 13px; margin-top: 4px; }
+
+  .rank-card {
+    background: linear-gradient(135deg, #1a0a2e, #0d0d1a);
+    border: 1px solid rgba(251,191,36,0.4);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .rank-card::after {
+    content: '';
+    position: absolute; top: -50%; right: -30%;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(251,191,36,0.08) 0%, transparent 70%);
+  }
+  .rank-row { display: flex; align-items: center; gap: 12px; }
+  .rank-badge { font-size: 48px; }
+  .rank-info { flex: 1; }
+  .rank-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .rank-name { font-size: 22px; font-weight: 900; color: var(--gold); }
+  .rank-xp { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .xp-bar { height: 8px; background: rgba(255,255,255,0.1); border-radius: 99px; margin-top: 12px; overflow: hidden; }
+  .xp-fill { height: 100%; background: linear-gradient(90deg, var(--gold), #f59e0b); border-radius: 99px; transition: width 0.6s cubic-bezier(.34,1.56,.64,1); }
+
+  .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .stat-box { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 10px; text-align: center; }
+  .stat-val { font-size: 22px; font-weight: 900; }
+  .stat-lbl { font-size: 10px; color: var(--muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .mode-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .mode-card:active { transform: scale(0.96); border-color: var(--accent2); }
+  .mode-icon { font-size: 32px; margin-bottom: 8px; }
+  .mode-name { font-weight: 800; font-size: 14px; }
+  .mode-desc { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  /* ── QUIZ SCREEN ── */
+  .quiz-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .quiz-back { background: var(--card); border: 1px solid var(--border); border-radius: 10px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; flex-shrink: 0; }
+  .quiz-meta { flex: 1; }
+  .quiz-topic { font-size: 12px; color: var(--accent2); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+  .quiz-progress-text { font-size: 11px; color: var(--muted); }
+  .streak-badge { background: linear-gradient(135deg, #f97316, #ef4444); color: white; border-radius: 20px; padding: 6px 12px; font-size: 13px; font-weight: 800; display: flex; align-items: center; gap: 4px; }
+
+  .progress-bar { height: 6px; background: rgba(255,255,255,0.08); border-radius: 99px; margin-bottom: 20px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 99px; transition: width 0.4s ease; }
+
+  .question-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 16px;
+    min-height: 140px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .question-type { font-size: 11px; color: var(--accent2); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .question-text { font-size: 17px; font-weight: 700; line-height: 1.5; }
+
+  .options-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+  .option-btn {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 12px;
+    font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 700; color: var(--text);
+  }
+  .option-btn:active { transform: scale(0.98); }
+  .option-letter {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: rgba(124,58,237,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 900; color: var(--accent2);
+    flex-shrink: 0;
+  }
+  .option-btn.correct { border-color: var(--green); background: rgba(16,185,129,0.1); }
+  .option-btn.correct .option-letter { background: var(--green); color: white; }
+  .option-btn.wrong { border-color: var(--red); background: rgba(239,68,68,0.1); }
+  .option-btn.wrong .option-letter { background: var(--red); color: white; }
+  .option-btn.disabled { pointer-events: none; opacity: 0.5; }
+  .option-btn.disabled.correct { opacity: 1; }
+
+  .explanation-box {
+    background: rgba(16,185,129,0.08);
+    border: 1px solid rgba(16,185,129,0.3);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 16px;
+    font-size: 14px; line-height: 1.6; color: #a7f3d0;
+    display: none;
+  }
+  .explanation-box.wrong-exp { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.3); color: #fca5a5; }
+
+  .loading-state { text-align: center; padding: 40px 20px; }
+  .spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--accent2); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { color: var(--muted); font-size: 14px; }
+
+  /* ── FLASHCARD SCREEN ── */
+  .fc-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .topic-selector { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+  .topic-chip {
+    padding: 8px 14px; border-radius: 20px; font-size: 13px; font-weight: 700;
+    border: 2px solid var(--border); background: var(--card); color: var(--muted);
+    cursor: pointer; transition: all 0.2s;
+  }
+  .topic-chip.active { border-color: var(--accent2); color: var(--accent2); background: rgba(168,85,247,0.1); }
+
+  .flashcard-wrap { perspective: 1000px; margin-bottom: 20px; }
+  .flashcard {
+    width: 100%; min-height: 220px;
+    position: relative; transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(.4,0,.2,1);
+    cursor: pointer;
+  }
+  .flashcard.flipped { transform: rotateY(180deg); }
+  .fc-face {
+    position: absolute; width: 100%; min-height: 220px;
+    backface-visibility: hidden; border-radius: 20px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 24px; text-align: center;
+  }
+  .fc-front {
+    background: linear-gradient(135deg, var(--card2), var(--card));
+    border: 1px solid rgba(168,85,247,0.4);
+    box-shadow: var(--glow);
+  }
+  .fc-back {
+    background: linear-gradient(135deg, #0a2010, var(--card));
+    border: 1px solid rgba(16,185,129,0.4);
+    transform: rotateY(180deg);
+    box-shadow: 0 0 20px rgba(16,185,129,0.2);
+  }
+  .fc-hint { font-size: 11px; color: var(--muted); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+  .fc-content { font-size: 18px; font-weight: 800; line-height: 1.5; }
+  .fc-back .fc-content { font-size: 16px; color: #a7f3d0; font-weight: 700; }
+
+  .fc-actions { display: flex; gap: 10px; }
+  .fc-btn-wrong { flex: 1; padding: 14px; border-radius: 12px; border: none; background: rgba(239,68,68,0.15); border: 2px solid rgba(239,68,68,0.3); color: #fca5a5; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 15px; cursor: pointer; transition: all 0.2s; }
+  .fc-btn-right { flex: 1; padding: 14px; border-radius: 12px; border: none; background: rgba(16,185,129,0.15); border: 2px solid rgba(16,185,129,0.3); color: #a7f3d0; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 15px; cursor: pointer; transition: all 0.2s; }
+  .fc-btn-wrong:active, .fc-btn-right:active { transform: scale(0.96); }
+
+  .fc-counter { text-align: center; color: var(--muted); font-size: 13px; margin-bottom: 12px; font-weight: 700; }
+
+  /* ── PROFILE SCREEN ── */
+  .profile-header { text-align: center; padding: 20px 0; }
+  .profile-avatar { font-size: 64px; margin-bottom: 8px; }
+  .profile-name { font-size: 22px; font-weight: 900; }
+  .profile-title { color: var(--accent2); font-size: 13px; font-weight: 700; margin-top: 4px; }
+
+  .achievements { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .achievement {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .achievement.unlocked { border-color: rgba(251,191,36,0.4); background: rgba(251,191,36,0.05); }
+  .ach-icon { font-size: 28px; }
+  .ach-info { flex: 1; min-width: 0; }
+  .ach-name { font-size: 12px; font-weight: 800; }
+  .ach-desc { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+  /* ── SECTION TITLE ── */
+  .section-title { font-size: 13px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; margin-top: 4px; }
+
+  /* ── RESULT SCREEN ── */
+  .result-wrap { text-align: center; padding: 30px 0; }
+  .result-emoji { font-size: 72px; margin-bottom: 12px; animation: bounce 0.6s ease; }
+  @keyframes bounce { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
+  .result-title { font-size: 26px; font-weight: 900; margin-bottom: 6px; }
+  .result-score { font-size: 48px; font-weight: 900; background: linear-gradient(135deg, var(--gold), #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .result-sub { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+  .result-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+  .xp-gained { font-size: 18px; font-weight: 900; color: var(--gold); margin-bottom: 6px; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-80px);
+    background: var(--card2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px 20px;
+    font-weight: 700; font-size: 14px;
+    transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
+    z-index: 999; white-space: nowrap; box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ── TOPIC SELECT ── */
+  .topic-select-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .topic-select-card {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 16px 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .topic-select-card.selected { border-color: var(--accent2); background: rgba(168,85,247,0.1); }
+  .topic-select-card:active { transform: scale(0.96); }
+  .ts-icon { font-size: 28px; margin-bottom: 8px; }
+  .ts-name { font-size: 13px; font-weight: 800; }
+</style>
+</head>
+<body>
+
+<!-- HOME -->
+<div id="screen-home" class="screen active">
+  <div class="home-header">
+    <div class="home-logo">🎮</div>
+    <div class="home-title">DGS Boss</div>
+    <div class="home-sub">Çalış, kazan, legend ol.</div>
+  </div>
+
+  <div class="rank-card">
+    <div class="rank-row">
+      <div class="rank-badge" id="home-rank-badge">🥉</div>
+      <div class="rank-info">
+        <div class="rank-label">Mevcut Rank</div>
+        <div class="rank-name" id="home-rank-name">Acemi</div>
+        <div class="rank-xp" id="home-rank-xp">0 / 100 XP</div>
+      </div>
+    </div>
+    <div class="xp-bar"><div class="xp-fill" id="home-xp-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-box">
+      <div class="stat-val" id="stat-correct" style="color:var(--green)">0</div>
+      <div class="stat-lbl">Doğru</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val" id="stat-streak" style="color:var(--gold)">0🔥</div>
+      <div class="stat-lbl">Seri</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val" id="stat-total" style="color:var(--accent2)">0</div>
+      <div class="stat-lbl">Toplam</div>
+    </div>
+  </div>
+
+  <div class="section-title">Mod Seç</div>
+  <div class="mode-grid">
+    <div class="mode-card" onclick="startQuizSetup()">
+      <div class="mode-icon">⚡</div>
+      <div class="mode-name">Quiz Modu</div>
+      <div class="mode-desc">Soru çöz, XP kazan</div>
+    </div>
+    <div class="mode-card" onclick="goFlashcard()">
+      <div class="mode-icon">🃏</div>
+      <div class="mode-name">Flashcard</div>
+      <div class="mode-desc">Kart çevir, öğren</div>
+    </div>
+    <div class="mode-card" onclick="startAIChat()">
+      <div class="mode-icon">🤖</div>
+      <div class="mode-name">AI Konu</div>
+      <div class="mode-desc">Konu anlat, özetle</div>
+    </div>
+    <div class="mode-card" onclick="goProfile()">
+      <div class="mode-icon">🏆</div>
+      <div class="mode-name">Profil</div>
+      <div class="mode-desc">Başarılar & istatistik</div>
+    </div>
+  </div>
+</div>
+
+<!-- QUIZ SETUP -->
+<div id="screen-quiz-setup" class="screen">
+  <div style="margin-bottom:20px">
+    <div style="font-size:24px;font-weight:900;margin-bottom:6px">⚡ Quiz Modu</div>
+    <div style="color:var(--muted);font-size:14px">Hangi konudan başlayalım?</div>
+  </div>
+
+  <div class="section-title">Ders</div>
+  <div class="topic-select-grid" id="subject-grid">
+    <div class="topic-select-card selected" data-subject="matematik" onclick="selectSubject(this)">
+      <div class="ts-icon">📐</div>
+      <div class="ts-name">Matematik</div>
+    </div>
+    <div class="topic-select-card" data-subject="turkce" onclick="selectSubject(this)">
+      <div class="ts-icon">📝</div>
+      <div class="ts-name">Türkçe / Dil Bilgisi</div>
+    </div>
+    <div class="topic-select-card" data-subject="sayisal" onclick="selectSubject(this)">
+      <div class="ts-icon">🔢</div>
+      <div class="ts-name">Sayısal Mantık</div>
+    </div>
+    <div class="topic-select-card" data-subject="sozel" onclick="selectSubject(this)">
+      <div class="ts-icon">💬</div>
+      <div class="ts-name">Sözel Mantık</div>
+    </div>
+  </div>
+
+  <div class="section-title">Soru Sayısı</div>
+  <div style="display:flex;gap:8px;margin-bottom:24px" id="count-grid">
+    <div class="topic-chip active" data-count="5" onclick="selectCount(this)">5 Soru</div>
+    <div class="topic-chip" data-count="10" onclick="selectCount(this)">10 Soru</div>
+    <div class="topic-chip" data-count="20" onclick="selectCount(this)">20 Soru</div>
+  </div>
+
+  <button class="btn btn-primary" onclick="startQuiz()">Başlat 🚀</button>
+  <button class="btn btn-outline" style="margin-top:10px" onclick="goHome()">Geri</button>
+</div>
+
+<!-- QUIZ -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-header">
+    <div class="quiz-back" onclick="endQuiz()">←</div>
+    <div class="quiz-meta">
+      <div class="quiz-topic" id="quiz-topic-label">Matematik</div>
+      <div class="quiz-progress-text" id="quiz-progress-text">Soru 1 / 10</div>
+    </div>
+    <div class="streak-badge" id="quiz-streak">🔥 <span id="streak-num">0</span></div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="quiz-progress-bar" style="width:0%"></div></div>
+
+  <div id="quiz-loading" class="loading-state">
+    <div class="spinner"></div>
+    <div class="loading-text">AI soru hazırlıyor...</div>
+  </div>
+
+  <div id="quiz-content" style="display:none">
+    <div class="question-card">
+      <div class="question-type" id="q-type">Çoktan Seçmeli</div>
+      <div class="question-text" id="q-text"></div>
+    </div>
+    <div class="options-list" id="q-options"></div>
+    <div class="explanation-box" id="q-explanation"></div>
+    <button class="btn btn-primary" id="q-next-btn" onclick="nextQuestion()" style="display:none">Devam Et →</button>
+  </div>
+</div>
+
+<!-- QUIZ RESULT -->
+<div id="screen-result" class="screen">
+  <div class="result-wrap">
+    <div class="result-emoji" id="result-emoji">🎉</div>
+    <div class="result-title" id="result-title">Harika!</div>
+    <div class="result-score" id="result-score">8/10</div>
+    <div class="result-sub" id="result-sub">Mükemmel performans!</div>
+    <div class="xp-gained" id="result-xp">+80 XP kazandın! ⭐</div>
+    <div class="result-stats">
+      <div class="stat-box">
+        <div class="stat-val" id="res-correct" style="color:var(--green)">8</div>
+        <div class="stat-lbl">Doğru</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" id="res-wrong" style="color:var(--red)">2</div>
+        <div class="stat-lbl">Yanlış</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" id="res-pct" style="color:var(--accent2)">80%</div>
+        <div class="stat-lbl">Başarı</div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="startQuizSetup()" style="margin-bottom:10px">Tekrar Oyna 🎮</button>
+    <button class="btn btn-outline" onclick="goHome()">Ana Sayfa</button>
+  </div>
+</div>
+
+<!-- FLASHCARD -->
+<div id="screen-flashcard" class="screen">
+  <div class="fc-header">
+    <div class="quiz-back" onclick="goHome()">←</div>
+    <div style="flex:1"><div style="font-size:18px;font-weight:900">🃏 Flashcard</div></div>
+    <button class="btn btn-primary btn-sm" onclick="loadFlashcards()">Yenile 🔄</button>
+  </div>
+
+  <div class="topic-selector" id="fc-topics">
+    <div class="topic-chip active" data-topic="matematik" onclick="selectFCTopic(this)">📐 Matematik</div>
+    <div class="topic-chip" data-topic="dil" onclick="selectFCTopic(this)">📝 Dil Bilgisi</div>
+    <div class="topic-chip" data-topic="mantik" onclick="selectFCTopic(this)">🧠 Mantık</div>
+  </div>
+
+  <div id="fc-loading" class="loading-state" style="display:none">
+    <div class="spinner"></div>
+    <div class="loading-text">Kartlar hazırlanıyor...</div>
+  </div>
+
+  <div id="fc-main" style="display:none">
+    <div class="fc-counter" id="fc-counter">Kart 1 / 8</div>
+    <div class="flashcard-wrap">
+      <div class="flashcard" id="flashcard" onclick="flipCard()">
+        <div class="fc-face fc-front">
+          <div class="fc-hint">👆 Çevirmek için dokun</div>
+          <div class="fc-content" id="fc-front-text"></div>
+        </div>
+        <div class="fc-face fc-back">
+          <div class="fc-hint">✅ Cevap</div>
+          <div class="fc-content" id="fc-back-text"></div>
+        </div>
+      </div>
+    </div>
+    <div class="fc-actions" id="fc-actions" style="display:none">
+      <button class="fc-btn-wrong" onclick="fcAnswer(false)">❌ Bilmedim</button>
+      <button class="fc-btn-right" onclick="fcAnswer(true)">✅ Bildim</button>
+    </div>
+    <button class="btn btn-outline" style="margin-top:10px" onclick="loadFlashcards()">Yeni Kart Seti 🔄</button>
+  </div>
+</div>
+
+<!-- AI CHAT -->
+<div id="screen-aichat" class="screen">
+  <div class="fc-header">
+    <div class="quiz-back" onclick="goHome()">←</div>
+    <div style="flex:1"><div style="font-size:18px;font-weight:900">🤖 AI Konu Anlatımı</div></div>
+  </div>
+
+  <div class="topic-selector">
+    <div class="topic-chip active" id="chat-topic-chip" data-topic="matematik" onclick="selectChatTopic(this,'matematik')">📐 Matematik</div>
+    <div class="topic-chip" data-topic="dil" onclick="selectChatTopic(this,'dil')">📝 Dil</div>
+    <div class="topic-chip" data-topic="mantik" onclick="selectChatTopic(this,'mantik')">🧠 Mantık</div>
+  </div>
+
+  <div id="chat-messages" style="margin-bottom:16px;display:flex;flex-direction:column;gap:12px;min-height:200px">
+    <div class="card" style="background:rgba(124,58,237,0.1);border-color:rgba(124,58,237,0.3)">
+      <div style="font-size:13px;color:var(--accent2);font-weight:800;margin-bottom:6px">🤖 DGS Bot</div>
+      <div style="font-size:14px;line-height:1.6">Merhaba! Herhangi bir konuyu açıklamamı ister misin? Örneğin: "Kesir işlemlerini anlat" veya "Sıfır nedir?" gibi sorular sorabilirsin!</div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:8px">
+    <input id="chat-input" type="text" placeholder="Soru sor veya konu iste..." 
+      style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font-family:'Nunito',sans-serif;font-size:14px;outline:none;"
+      onkeydown="if(event.key==='Enter')sendChat()">
+    <button class="btn btn-primary btn-sm" onclick="sendChat()" style="white-space:nowrap">Gönder</button>
+  </div>
+  <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+    <div class="topic-chip" style="font-size:11px;padding:6px 10px" onclick="quickChat('DGS Matematik konularını özetle')">📋 Özet</div>
+    <div class="topic-chip" style="font-size:11px;padding:6px 10px" onclick="quickChat('En çok çıkan DGS konuları neler?')">🎯 Sık Konular</div>
+    <div class="topic-chip" style="font-size:11px;padding:6px 10px" onclick="quickChat('Bana kısa bir ipucu ver')">💡 İpucu</div>
+  </div>
+</div>
+
+<!-- PROFILE -->
+<div id="screen-profile" class="screen">
+  <div class="profile-header">
+    <div class="profile-avatar">🦁</div>
+    <div class="profile-name" id="profile-rank-name">Acemi</div>
+    <div class="profile-title" id="profile-rank-title">Rank: Başlangıç</div>
+  </div>
+
+  <div class="stats-row" style="margin-bottom:20px">
+    <div class="stat-box">
+      <div class="stat-val" id="p-total" style="color:var(--accent2)">0</div>
+      <div class="stat-lbl">Toplam Soru</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val" id="p-correct" style="color:var(--green)">0</div>
+      <div class="stat-lbl">Doğru</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val" id="p-xp" style="color:var(--gold)">0</div>
+      <div class="stat-lbl">XP</div>
+    </div>
+  </div>
+
+  <div class="section-title">Başarılar</div>
+  <div class="achievements" id="achievements-grid"></div>
+
+  <button class="btn btn-outline" style="margin-top:16px" onclick="goHome()">← Ana Sayfa</button>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="nav" id="main-nav">
+  <button class="nav-btn active" onclick="goHome()" id="nav-home">
+    <span class="nav-icon">🏠</span>Ana Sayfa
+  </button>
+  <button class="nav-btn" onclick="startQuizSetup()" id="nav-quiz">
+    <span class="nav-icon">⚡</span>Quiz
+  </button>
+  <button class="nav-btn" onclick="goFlashcard()" id="nav-fc">
+    <span class="nav-icon">🃏</span>Kartlar
+  </button>
+  <button class="nav-btn" onclick="goProfile()" id="nav-profile">
+    <span class="nav-icon">🏆</span>Profil
+  </button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── STATE ──
+const RANKS = [
+  { name: 'Acemi', badge: '🥉', min: 0, max: 100 },
+  { name: 'Çaylak', badge: '🥈', min: 100, max: 250 },
+  { name: 'Umutlu', badge: '🥇', min: 250, max: 500 },
+  { name: 'Azimli', badge: '🎖️', min: 500, max: 800 },
+  { name: 'Yetenekli', badge: '🏅', min: 800, max: 1200 },
+  { name: 'Usta', badge: '🌟', min: 1200, max: 1800 },
+  { name: 'DGS Legend', badge: '👑', min: 1800, max: 9999 },
+];
+const ACHIEVEMENTS = [
+  { id: 'first', icon: '🌱', name: 'İlk Adım', desc: 'İlk soruyu cevapla' },
+  { id: 'streak5', icon: '🔥', name: 'Ateş', desc: '5 seri yap' },
+  { id: 'correct10', icon: '✅', name: 'On\'a On', desc: '10 doğru cevapla' },
+  { id: 'perfect', icon: '💎', name: 'Mükemmel', desc: 'Quiz\'i sıfır hatayla bitir' },
+  { id: 'rank2', icon: '⭐', name: 'Çaylak', desc: 'Çaylak rankına ulaş' },
+  { id: 'flash10', icon: '🃏', name: 'Kart Ustası', desc: '10 flashcard bil' },
+];
+
+let state = JSON.parse(localStorage.getItem('dgs_state') || 'null') || {
+  xp: 0, totalCorrect: 0, totalAnswered: 0, streak: 0, maxStreak: 0,
+  unlockedAchievements: [],
+  fc_known: 0,
+};
+
+let quiz = { questions: [], current: 0, correct: 0, wrong: 0, subject: 'matematik', count: 10, flipped: false };
+let fc = { cards: [], current: 0, known: 0, flipped: false, topic: 'matematik' };
+let chatTopic = 'matematik';
+
+function saveState() { localStorage.setItem('dgs_state', JSON.stringify(state)); }
+
+// ── RANK ──
+function getRank(xp) { return RANKS.slice().reverse().find(r => xp >= r.min) || RANKS[0]; }
+function getNextRank(xp) {
+  const idx = RANKS.findIndex(r => xp < r.max);
+  return idx === -1 ? RANKS[RANKS.length-1] : RANKS[idx];
+}
+
+function updateHomeUI() {
+  const rank = getRank(state.xp);
+  const next = getNextRank(state.xp);
+  document.getElementById('home-rank-badge').textContent = rank.badge;
+  document.getElementById('home-rank-name').textContent = rank.name;
+  document.getElementById('home-rank-xp').textContent = `${state.xp} / ${next.max} XP`;
+  const pct = Math.min(100, ((state.xp - rank.min) / (next.max - rank.min)) * 100);
+  document.getElementById('home-xp-fill').style.width = pct + '%';
+  document.getElementById('stat-correct').textContent = state.totalCorrect;
+  document.getElementById('stat-streak').textContent = state.maxStreak + '🔥';
+  document.getElementById('stat-total').textContent = state.totalAnswered;
+}
+
+// ── SCREEN NAV ──
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+  const noNav = ['quiz', 'result'].includes(id);
+  document.getElementById('main-nav').style.display = noNav ? 'none' : 'flex';
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const map = { home: 'nav-home', 'quiz-setup': 'nav-quiz', flashcard: 'nav-fc', profile: 'nav-profile', aichat: 'nav-home' };
+  if (map[id]) document.getElementById(map[id])?.classList.add('active');
+}
+function goHome() { updateHomeUI(); showScreen('home'); }
+function goFlashcard() { showScreen('flashcard'); if (!fc.cards.length) loadFlashcards(); }
+function goProfile() { updateProfileUI(); showScreen('profile'); }
+function startQuizSetup() { showScreen('quiz-setup'); }
+function startAIChat() { showScreen('aichat'); }
+
+// ── QUIZ SETUP ──
+let selectedSubject = 'matematik', selectedCount = 5;
+function selectSubject(el) {
+  document.querySelectorAll('#subject-grid .topic-select-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedSubject = el.dataset.subject;
+}
+function selectCount(el) {
+  document.querySelectorAll('#count-grid .topic-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  selectedCount = parseInt(el.dataset.count);
+}
+
+// ── QUIZ ──
+async function startQuiz() {
+  quiz = { questions: [], current: 0, correct: 0, wrong: 0, subject: selectedSubject, count: selectedCount };
+  showScreen('quiz');
+  document.getElementById('quiz-topic-label').textContent = { matematik: '📐 Matematik', turkce: '📝 Türkçe', sayisal: '🔢 Sayısal Mantık', sozel: '💬 Sözel Mantık' }[selectedSubject];
+  document.getElementById('quiz-progress-text').textContent = `Soru 1 / ${selectedCount}`;
+  document.getElementById('quiz-streak').querySelector('#streak-num').textContent = state.streak;
+  await loadQuizQuestion();
+}
+
+async function loadQuizQuestion() {
+  document.getElementById('quiz-loading').style.display = 'block';
+  document.getElementById('quiz-content').style.display = 'none';
+  document.getElementById('q-explanation').style.display = 'none';
+  document.getElementById('q-next-btn').style.display = 'none';
+
+  const SORU_BANKASI = {
+    matematik: [
+      {soru:'Bir sayının %25'i 15 ise, bu sayının %60'ı kaçtır?', secenekler:['30','36','42','48'], dogru:1, aciklama:'Sayı = 15/0.25 = 60. 60'ın %60'ı = 36.'},
+      {soru:'3/4 + 5/6 işleminin sonucu kaçtır?', secenekler:['8/10','19/12','4/5','17/12'], dogru:1, aciklama:'OKA=12. 9/12 + 10/12 = 19/12.'},
+      {soru:'Bir ürün %20 indirimle 160 TL'ye satılıyor. İndirimden önceki fiyatı kaçtır?', secenekler:['180','192','200','210'], dogru:2, aciklama:'160 = X × 0.80, X = 200 TL.'},
+      {soru:'2³ × 4² işleminin sonucu kaçtır?', secenekler:['64','96','128','256'], dogru:2, aciklama:'2³=8, 4²=16, 8×16=128.'},
+      {soru:'12 ile 18'in EBOB'u kaçtır?', secenekler:['3','4','6','9'], dogru:2, aciklama:'12=2²×3, 18=2×3². EBOB=2×3=6.'},
+      {soru:'Bir araç 90 km/s hızla 2,5 saatte kaç km yol alır?', secenekler:['180','200','225','250'], dogru:2, aciklama:'Mesafe = 90 × 2,5 = 225 km.'},
+      {soru:'(x+3)(x-2) çarpımını açınız.', secenekler:['x²+x-6','x²-x-6','x²+5x-6','x²-5x+6'], dogru:0, aciklama:'x²-2x+3x-6 = x²+x-6.'},
+      {soru:'Bir dikdörtgenin uzun kenarı 8, kısa kenarı 5 cm ise çevresi kaçtır?', secenekler:['26','28','30','40'], dogru:0, aciklama:'Çevre = 2×(8+5) = 26 cm.'},
+      {soru:'4/5 ÷ 2/3 işleminin sonucu kaçtır?', secenekler:['6/5','8/15','5/6','6/7'], dogru:0, aciklama:'4/5 × 3/2 = 12/10 = 6/5.'},
+      {soru:'15'in 4'e bölümünden kalanı 2 ile çarpınız.', secenekler:['2','4','6','8'], dogru:2, aciklama:'15 ÷ 4 = 3 kalan 3. 3×2 = 6.'},
+      {soru:'Bir üçgenin iç açıları toplamı kaç derecedir?', secenekler:['90','120','180','360'], dogru:2, aciklama:'Bir üçgenin iç açıları toplamı her zaman 180 derecedir.'},
+      {soru:'5 ile 7'nin EKOK'u kaçtır?', secenekler:['12','25','35','70'], dogru:2, aciklama:'5 ve 7 asal sayılar olduğundan EKOK = 5×7 = 35.'},
+      {soru:'(-3)² + (-2)³ işleminin sonucu kaçtır?', secenekler:['1','17','-1','13'], dogru:0, aciklama:'(-3)²=9, (-2)³=-8. 9+(-8)=1.'},
+      {soru:'Bir kare bahçenin bir kenarı 12 m ise alanı kaçtır?', secenekler:['48','96','144','168'], dogru:2, aciklama:'Alan = 12² = 144 m².'},
+      {soru:'%15 faizle 1000 TL'yi 1 yıl bankaya koyarsanız faiz kaç TL olur?', secenekler:['100','115','150','200'], dogru:2, aciklama:'Faiz = 1000 × 0.15 = 150 TL.'},
+    ],
+    turkce: [
+      {soru:'"Güzel" sözcüğü hangi cümlede zarf görevinde kullanılmıştır?', secenekler:['Güzel bir gün geçirdik.','O çok güzel konuşuyor.','Güzel çiçekler açmış.','Bu güzel bir fikirdir.'], dogru:1, aciklama:'Zarf, fiili niteler. "Güzel konuşuyor" ifadesinde fiili nitelediği için zarftır.'},
+      {soru:'"Kitaplık" sözcüğünün yapısı hangisidir?', secenekler:['Basit','Türemiş','Bileşik','Kısaltma'], dogru:1, aciklama:'"Kitap" köküne "-lık" yapım eki getirilerek türetilmiştir.'},
+      {soru:'Aşağıdakilerden hangisi ad tamlamasıdır?', secenekler:['Güzel hava','Okul bahçesi','Hızlı araba','Derin göl'], dogru:1, aciklama:'"Okul bahçesi" bir ismin başka bir ismi belirtmesidir; ad tamlamasıdır.'},
+      {soru:'"Koşmak" fiilinin geniş zaman 3. tekil şahsı hangisidir?', secenekler:['Koştu','Koşacak','Koşar','Koşuyor'], dogru:2, aciklama:'Geniş zaman eki -ar/-er/-ir'dir. "Koşar" doğru yanıttır.'},
+      {soru:'Hangisi yazım kuralına göre doğru yazılmıştır?', secenekler:['herşey','her şey','Herşey','her Şey'], dogru:1, aciklama:'"Her" ayrı yazılır: "her şey" doğrudur.'},
+      {soru:'"Eli yüzü düzgün" deyimi hangi anlama gelir?', secenekler:['Güzel görünümlü','Temizlik düşkünü','Başarılı ve zarif','Dürüst ve güvenilir'], dogru:2, aciklama:'"Eli yüzü düzgün" deyimi; zarif, becerikli ve başarılı anlamına gelir.'},
+      {soru:'Aşağıdakilerden hangisi sıfat tamlamasıdır?', secenekler:['Annem geldi','Kırmızı araba','Türkiye'nin başkenti','Hızla koştu'], dogru:1, aciklama:'"Kırmızı araba"da sıfat ismi nitelediği için sıfat tamlamasıdır.'},
+      {soru:'"Sabah" sözcüğü hangi cümlede zaman zarfı olarak kullanılmıştır?', secenekler:['Sabah kahvesi içtim.','Sabah güneşi doğdu.','Sabah erkenden çıktı.','Sabah programı başladı.'], dogru:2, aciklama:'"Sabah erkenden çıktı" cümlesinde "sabah" zamanı belirttiği için zarf görevindedir.'},
+      {soru:'Hangisi bileşik sözcüktür?', secenekler:['Güzellik','Kapı','Hanımeli','Kitaplık'], dogru:2, aciklama:'"Hanımeli" iki ayrı sözcüğün birleşmesiyle oluşan bileşik sözcüktür.'},
+      {soru:'"Bugün hava çok sıcak" cümlesinde kaç sözcük vardır?', secenekler:['3','4','5','6'], dogru:1, aciklama:'"Bugün / hava / çok / sıcak" — 4 sözcük vardır.'},
+      {soru:'Hangi cümlede noktalama yanlış kullanılmıştır?', secenekler:['Merhaba, nasılsın?','Kitabı aldım geliyorum.','Dur, bekle!','Evet, haklısın.'], dogru:1, aciklama:'"Kitabı aldım geliyorum" cümlesinde virgül olmalıydı: "Kitabı aldım, geliyorum."'},
+      {soru:'"Çalışkan" sözcüğünün zıt anlamlısı hangisidir?', secenekler:['Tembel','Yorgun','Hızlı','Akıllı'], dogru:0, aciklama:'"Çalışkan"ın zıt anlamlısı "tembel"dir.'},
+      {soru:'Aşağıdakilerden hangisi fiilden türetilmiş bir isimdir?', secenekler:['Güzellik','Yazı','Kırmızılık','Taşlık'], dogru:1, aciklama:'"Yaz-" fiilinden "-ı" ekiyle "yazı" türetilmiştir.'},
+      {soru:'"Altın" sözcüğü hangi cümlede mecaz anlamda kullanılmıştır?', secenekler:['Altın yüzük taktı.','Altın madeni bulundu.','Altın kalpli bir insandır.','Altın fiyatları arttı.'], dogru:2, aciklama:'"Altın kalpli" ifadesinde altın gerçek anlamında değil, "değerli, iyi" anlamında mecaz olarak kullanılmıştır.'},
+      {soru:'Hangisi atasözüdür?', secenekler:['Göz görmeyince gönül katlanır','Damlaya damlaya göl olur','Eli yüzü düzgün','Baş göz üstüne'], dogru:1, aciklama:'"Damlaya damlaya göl olur" bir atasözüdür; birikimlerin büyük sonuçlar doğurduğunu anlatır.'},
+    ],
+    sayisal: [
+      {soru:'2, 5, 10, 17, 26, ? Dizisinin bir sonraki terimi nedir?', secenekler:['35','37','38','40'], dogru:1, aciklama:'Farklar: 3,5,7,9,11... Sıradaki fark 11. 26+11=37.'},
+      {soru:'1, 4, 9, 16, 25, ? Dizisinin bir sonraki terimi nedir?', secenekler:['30','34','36','49'], dogru:2, aciklama:'Tam kareler dizisi: 1²,2²,3²,4²,5²,6²=36.'},
+      {soru:'Bir sınıfta 30 öğrencinin 18'i kız ise erkek öğrencilerin oranı kaçtır?', secenekler:['%30','%40','%50','%60'], dogru:1, aciklama:'Erkek = 30-18 = 12. 12/30 = %40.'},
+      {soru:'3, 6, 12, 24, ? Dizisinin bir sonraki terimi nedir?', secenekler:['36','42','48','60'], dogru:2, aciklama:'Her terim bir öncekinin 2 katı. 24×2=48.'},
+      {soru:'A > B ve B > C ise hangisi kesinlikle doğrudur?', secenekler:['C > A','A > C','B = C','A = C'], dogru:1, aciklama:'A > B > C olduğundan A > C kesinlikle doğrudur.'},
+      {soru:'100, 91, 82, 73, ? Dizisinin bir sonraki terimi nedir?', secenekler:['60','62','64','66'], dogru:2, aciklama:'Her terim 9 azalıyor. 73-9=64.'},
+      {soru:'Tüm A'lar B'dir. Tüm B'ler C'dir. Buna göre hangisi doğrudur?', secenekler:['Tüm C'ler A'dır','Hiçbir A C değildir','Tüm A'lar C'dir','Bazı B'ler A değildir'], dogru:2, aciklama:'A→B ve B→C olduğundan A→C çıkarımı yapılır.'},
+      {soru:'2, 3, 5, 8, 13, ? Dizisinin bir sonraki terimi nedir?', secenekler:['18','20','21','24'], dogru:2, aciklama:'Fibonacci dizisi: her terim önceki iki terimin toplamı. 8+13=21.'},
+    ],
+    sozel: [
+      {soru:'Kitap : Yazar :: Resim : ?', secenekler:['Müzik','Ressam','Boya','Sergi'], dogru:1, aciklama:'Kitabı yazar yazar, resmi ressam yapar.'},
+      {soru:'Göz : Görmek :: Kulak : ?', secenekler:['Duymak','Konuşmak','Koklamak','Tatmak'], dogru:0, aciklama:'Göz görmek için kullanılır, kulak duymak için.'},
+      {soru:'Kuş : Uçmak :: Balık : ?', secenekler:['Yürümek','Yüzmek','Koşmak','Sürünmek'], dogru:1, aciklama:'Kuş uçar, balık yüzer.'},
+      {soru:'Türkiye : Ankara :: Fransa : ?', secenekler:['Lyon','Marsilya','Paris','Bordeaux'], dogru:2, aciklama:'Türkiye'nin başkenti Ankara, Fransa'nın başkenti Paris'tir.'},
+      {soru:'Sıcak : Soğuk :: Gece : ?', secenekler:['Ay','Gündüz','Karanlık','Yıldız'], dogru:1, aciklama:'Sıcak ile Soğuk zıttır, Gece ile Gündüz zıttır.'},
+      {soru:'Doktor : Hastane :: Öğretmen : ?', secenekler:['Kitap','Okul','Sınıf','Kalem'], dogru:1, aciklama:'Doktor hastanede, öğretmen okulda çalışır.'},
+      {soru:'Elma : Meyve :: Gül : ?', secenekler:['Ağaç','Çiçek','Yaprak','Bahçe'], dogru:1, aciklama:'Elma bir meyve türüdür, gül bir çiçek türüdür.'},
+      {soru:'Kalem : Yazmak :: Bıçak : ?', secenekler:['Kesmek','Pişirmek','Yemek','Tutmak'], dogru:0, aciklama:'Kalem yazmak için, bıçak kesmek için kullanılır.'},
+      {soru:'Yaz : Sıcak :: Kış : ?', secenekler:['Yağmur','Kar','Soğuk','Rüzgar'], dogru:2, aciklama:'Yaz sıcaktır, kış soğuktur.'},
+      {soru:'Araba : Sürücü :: Uçak : ?', secenekler:['Hostes','Pilot','Mühendis','Yolcu'], dogru:1, aciklama:'Arabayı sürücü kullanır, uçağı pilot kullanır.'},
+    ],
+  };
+
+  const bank = SORU_BANKASI[quiz.subject];
+  const askedIndices = quiz.questions.map(q => q._idx).filter(i => i !== undefined);
+  const available = bank.map((q,i) => i).filter(i => !askedIndices.includes(i));
+  
+  if (available.length === 0) {
+    // Tüm sorular soruldu, baştan başla
+    const idx = Math.floor(Math.random() * bank.length);
+    const q = {...bank[idx], _idx: idx};
+    quiz.questions.push(q);
+    renderQuestion(q);
+    return;
+  }
+  
+  const idx = available[Math.floor(Math.random() * available.length)];
+  const q = {...bank[idx], _idx: idx};
+  quiz.questions.push(q);
+  renderQuestion(q);
+}
+
+function renderQuestion(q) {
+  document.getElementById('quiz-loading').style.display = 'none';
+  document.getElementById('quiz-content').style.display = 'block';
+  document.getElementById('q-text').textContent = q.soru;
+  const letters = ['A','B','C','D'];
+  const opts = document.getElementById('q-options');
+  opts.innerHTML = '';
+  q.secenekler.forEach((s, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<div class="option-letter">${letters[i]}</div><span>${s}</span>`;
+    btn.onclick = () => answerQuestion(i, q, btn);
+    opts.appendChild(btn);
+  });
+  const n = quiz.current + 1;
+  document.getElementById('quiz-progress-text').textContent = `Soru ${n} / ${quiz.count}`;
+  document.getElementById('quiz-progress-bar').style.width = ((n-1)/quiz.count*100) + '%';
+}
+
+function answerQuestion(idx, q, btn) {
+  const all = document.querySelectorAll('.option-btn');
+  all.forEach(b => b.classList.add('disabled'));
+  const isCorrect = idx === q.dogru;
+
+  all.forEach((b, i) => { if (i === q.dogru) b.classList.add('correct'); });
+  if (!isCorrect) btn.classList.add('wrong');
+
+  const expBox = document.getElementById('q-explanation');
+  expBox.style.display = 'block';
+  expBox.className = 'explanation-box' + (isCorrect ? '' : ' wrong-exp');
+  expBox.textContent = (isCorrect ? '✅ ' : '❌ ') + q.aciklama;
+
+  if (isCorrect) {
+    quiz.correct++;
+    state.totalCorrect++;
+    state.streak++;
+    if (state.streak > state.maxStreak) state.maxStreak = state.streak;
+    document.getElementById('streak-num').textContent = state.streak;
+    gainXP(10 + state.streak * 2);
+    showToast('✅ Doğru! +' + (10 + state.streak*2) + ' XP');
+    checkAchievements();
+  } else {
+    quiz.wrong++;
+    state.streak = 0;
+    document.getElementById('streak-num').textContent = 0;
+    showToast('❌ Yanlış!');
+  }
+  state.totalAnswered++;
+  saveState();
+
+  document.getElementById('q-next-btn').style.display = 'block';
+  quiz.current++;
+}
+
+function nextQuestion() {
+  if (quiz.current >= quiz.count) { showResult(); return; }
+  loadQuizQuestion();
+}
+
+function showResult() {
+  const pct = Math.round(quiz.correct / quiz.count * 100);
+  const xpGained = quiz.correct * 10 + (pct === 100 ? 50 : 0);
+  gainXP(0); // already gained per question
+
+  let emoji = '😞', title = 'Dene Tekrar';
+  if (pct >= 90) { emoji = '🏆'; title = 'Efsane!'; }
+  else if (pct >= 70) { emoji = '🎉'; title = 'Harika!'; }
+  else if (pct >= 50) { emoji = '👍'; title = 'Fena Değil!'; }
+
+  document.getElementById('result-emoji').textContent = emoji;
+  document.getElementById('result-title').textContent = title;
+  document.getElementById('result-score').textContent = `${quiz.correct}/${quiz.count}`;
+  document.getElementById('result-sub').textContent = `%${pct} başarı oranı`;
+  document.getElementById('result-xp').textContent = `+${quiz.correct * (10 + state.streak)} XP kazandın! ⭐`;
+  document.getElementById('res-correct').textContent = quiz.correct;
+  document.getElementById('res-wrong').textContent = quiz.wrong;
+  document.getElementById('res-pct').textContent = pct + '%';
+
+  if (pct === 100) checkAchievement('perfect');
+  showScreen('result');
+}
+
+function endQuiz() { if (confirm('Quiz\'den çıkmak istiyor musun?')) goHome(); }
+
+// ── FLASHCARD ──
+let fcTopic = 'matematik';
+function selectFCTopic(el) {
+  document.querySelectorAll('#fc-topics .topic-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  fcTopic = el.dataset.topic;
+  loadFlashcards();
+}
+
+async function loadFlashcards() {
+  document.getElementById('fc-loading').style.display = 'block';
+  document.getElementById('fc-main').style.display = 'none';
+  fc = { cards: [], current: 0, known: 0, flipped: false, topic: fcTopic };
+
+  const topicMap = {
+    matematik: 'DGS Matematik (kesirler, oran-orantı, temel cebir, geometri formülleri)',
+    dil: 'DGS Türkçe ve Dil Bilgisi (sözcük türleri, cümle ögesi, yazım kuralları, anlam)',
+    mantik: 'DGS Sayısal ve Sözel Mantık (analoji, örüntü, akıl yürütme)',
+  };
+
+  const prompt = `Sen bir DGS hazırlık öğretmenisin. ${topicMap[fcTopic]} konusundan 6 adet flashcard üret.
+
+SADECE JSON array formatında yanıt ver:
+[
+  {"on": "Soru veya kavram", "arka": "Kısa, net cevap (max 2 cümle)"},
+  ...
+]
+
+Kartlar gerçekten öğretici ve DGS'ye yönelik olsun. Başka hiçbir şey yazma.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, messages: [{ role: 'user', content: prompt }] })
+    });
+    const data = await res.json();
+    const text = data.content.map(i => i.text || '').join('');
+    fc.cards = JSON.parse(text.replace(/```json|```/g, '').trim());
+  } catch(e) {
+    fc.cards = [
+      {on:'ORAN nedir?', arka:'İki sayının birbirine bölümüdür. a/b şeklinde gösterilir.'},
+      {on:'ORANTIDA temel özellik nedir?', arka:'a/b = c/d ise a×d = b×c olur (çarpraz çarpım).'},
+      {on:'Ad tamlaması nedir?', arka:'Bir ismin başka bir ismi belirtmesi. "Okul bahçesi" gibi.'},
+      {on:'Sıfat nedir?', arka:'İsimleri niteleyen ya da belirten sözcüklerdir. "Güzel çiçek" örneğinde "güzel" sıfattır.'},
+      {on:'Analoji nedir?', arka:'İki kavram arasındaki ilişkinin benzer şekilde başka iki kavrama uygulanması.'},
+      {on:'YÜZDE hesabı nasıl yapılır?', arka:'Yüzde = (Kısım / Toplam) × 100'},
+    ];
+  }
+
+  document.getElementById('fc-loading').style.display = 'none';
+  document.getElementById('fc-main').style.display = 'block';
+  renderFC();
+}
+
+function renderFC() {
+  if (fc.current >= fc.cards.length) {
+    document.getElementById('fc-front-text').textContent = '🎉 Tüm kartları bitirdin!';
+    document.getElementById('fc-back-text').textContent = `${fc.known} / ${fc.cards.length} kart bildin!`;
+    document.getElementById('fc-counter').textContent = 'Tamamlandı!';
+    document.getElementById('fc-actions').style.display = 'none';
+    return;
+  }
+  const card = fc.cards[fc.current];
+  document.getElementById('fc-counter').textContent = `Kart ${fc.current+1} / ${fc.cards.length}`;
+  document.getElementById('fc-front-text').textContent = card.on;
+  document.getElementById('fc-back-text').textContent = card.arka;
+  document.getElementById('flashcard').classList.remove('flipped');
+  document.getElementById('fc-actions').style.display = 'none';
+  fc.flipped = false;
+}
+
+function flipCard() {
+  if (fc.current >= fc.cards.length) return;
+  fc.flipped = !fc.flipped;
+  document.getElementById('flashcard').classList.toggle('flipped', fc.flipped);
+  if (fc.flipped) document.getElementById('fc-actions').style.display = 'flex';
+}
+
+function fcAnswer(known) {
+  if (known) {
+    fc.known++;
+    state.fc_known++;
+    gainXP(5);
+    showToast('✅ +5 XP');
+    if (fc.known >= 10) checkAchievement('flash10');
+  } else {
+    showToast('📚 Tekrar çalış!');
+  }
+  fc.current++;
+  saveState();
+  setTimeout(renderFC, 200);
+}
+
+// ── AI CHAT ──
+function selectChatTopic(el, topic) {
+  document.querySelectorAll('#screen-aichat .topic-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  chatTopic = topic;
+}
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  appendChatMsg(msg, 'user');
+  await getAIResponse(msg);
+}
+
+async function quickChat(msg) {
+  appendChatMsg(msg, 'user');
+  await getAIResponse(msg);
+}
+
+function appendChatMsg(text, role) {
+  const wrap = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'card';
+  if (role === 'user') {
+    div.style.cssText = 'background:rgba(124,58,237,0.15);border-color:rgba(124,58,237,0.4);margin-left:20px';
+    div.innerHTML = `<div style="font-size:13px;color:var(--accent2);font-weight:800;margin-bottom:6px">👤 Sen</div><div style="font-size:14px;line-height:1.6">${text}</div>`;
+  } else if (role === 'bot') {
+    div.style.cssText = 'margin-right:20px';
+    div.innerHTML = `<div style="font-size:13px;color:var(--green);font-weight:800;margin-bottom:6px">🤖 DGS Bot</div><div style="font-size:14px;line-height:1.6">${text}</div>`;
+  } else {
+    div.style.cssText = 'opacity:0.6';
+    div.innerHTML = `<div style="font-size:13px;color:var(--muted)">⏳ Yazıyor...</div>`;
+    div.id = 'loading-msg';
+  }
+  wrap.appendChild(div);
+  wrap.scrollTop = wrap.scrollHeight;
+}
+
+async function getAIResponse(userMsg) {
+  appendChatMsg('', 'loading');
+  const topicMap = { matematik: 'DGS Matematik', dil: 'DGS Türkçe ve Dil Bilgisi', mantik: 'DGS Mantık' };
+  const prompt = `Sen ${topicMap[chatTopic]} uzmanı bir DGS hazırlık öğretmenisin. Öğrenci sana şunu sordu: "${userMsg}"
+
+Kısa, net ve öğrenciye yararlı bir yanıt ver. Mümkünse örnek ver. Maksimum 4-5 cümle. Türkçe yanıt ver.`;
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, messages: [{ role: 'user', content: prompt }] })
+    });
+    const data = await res.json();
+    const text = data.content.map(i => i.text || '').join('');
+    document.getElementById('loading-msg')?.remove();
+    appendChatMsg(text, 'bot');
+  } catch(e) {
+    document.getElementById('loading-msg')?.remove();
+    appendChatMsg('Üzgünüm, şu an bağlanamadım. Tekrar dene!', 'bot');
+  }
+}
+
+// ── XP & ACHIEVEMENTS ──
+function gainXP(amount) {
+  state.xp += amount;
+  saveState();
+  checkAchievements();
+}
+
+function checkAchievements() {
+  if (state.totalAnswered >= 1) checkAchievement('first');
+  if (state.maxStreak >= 5) checkAchievement('streak5');
+  if (state.totalCorrect >= 10) checkAchievement('correct10');
+  if (state.xp >= 100) checkAchievement('rank2');
+}
+
+function checkAchievement(id) {
+  if (!state.unlockedAchievements.includes(id)) {
+    state.unlockedAchievements.push(id);
+    const a = ACHIEVEMENTS.find(a => a.id === id);
+    if (a) showToast(`🏆 Başarı açıldı: ${a.name}!`);
+    saveState();
+  }
+}
+
+// ── PROFILE ──
+function updateProfileUI() {
+  const rank = getRank(state.xp);
+  document.getElementById('profile-rank-name').textContent = rank.badge + ' ' + rank.name;
+  document.getElementById('profile-rank-title').textContent = `${state.xp} XP`;
+  document.getElementById('p-total').textContent = state.totalAnswered;
+  document.getElementById('p-correct').textContent = state.totalCorrect;
+  document.getElementById('p-xp').textContent = state.xp;
+
+  const grid = document.getElementById('achievements-grid');
+  grid.innerHTML = '';
+  ACHIEVEMENTS.forEach(a => {
+    const unlocked = state.unlockedAchievements.includes(a.id);
+    grid.innerHTML += `<div class="achievement ${unlocked ? 'unlocked' : ''}">
+      <div class="ach-icon" style="${unlocked ? '' : 'filter:grayscale(1);opacity:0.4'}">${a.icon}</div>
+      <div class="ach-info">
+        <div class="ach-name" style="${unlocked ? 'color:var(--gold)' : ''}">${a.name}</div>
+        <div class="ach-desc">${a.desc}</div>
+      </div>
+    </div>`;
+  });
+}
+
+// ── TOAST ──
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ── INIT ──
+updateHomeUI();
+</script>
+</body>
+</html>
