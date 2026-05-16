@@ -712,25 +712,19 @@ async function loadQuizQuestion() {
   document.getElementById('q-explanation').style.display = 'none';
   document.getElementById('q-next-btn').style.display = 'none';
 
-  const subjectMap = {
-    matematik: 'DGS sınavı için Matematik (kesirler, oran-orantı, denklemler, geometri, sayı sistemleri)',
-    turkce: 'DGS sınavı için Türkçe ve Dil Bilgisi (yazım kuralları, sözcük türleri, cümle yapısı, anlam bilgisi)',
-    sayisal: 'DGS sınavı için Sayısal Mantık (dizi-seri, örüntü, temel akıl yürütme)',
-    sozel: 'DGS sınavı için Sözel Mantık (analoji, kavram, sözel akıl yürütme)',
+  const subTopics = {
+    matematik: ['kesirler','yüzdeler','oran-orantı','temel denklemler','geometri alanı','çarpanlara ayırma','EBOB-EKOK','hız-mesafe-zaman','karışım problemleri','yaş problemleri','kâr-zarar','üslü sayılar'],
+    turkce: ['ad tamlaması','sıfat tamlaması','fiil çekimi','yazım kuralları','noktalama','eş anlamlı kelimeler','zıt anlamlı kelimeler','deyimler','atasözleri','cümle ögesi','sözcük türleri','anlam bilgisi'],
+    sayisal: ['sayı dizileri','şekil dizileri','matris örüntüsü','mantıksal çıkarım','sembolik işlemler','kodlama','sayı ilişkileri'],
+    sozel: ['sözcük analogisi','kavram ilişkisi','tamamlama','sebep-sonuç','parça-bütün ilişkisi','zıtlık analogisi'],
   };
+  const topics = subTopics[quiz.subject];
+  const randomTopic = topics[Math.floor(Math.random() * topics.length)];
+  const difficulty = ['kolay','orta','zor'][Math.floor(Math.random() * 3)];
+  const seed = Math.random().toString(36).substring(7);
+  const prevQ = quiz.questions.map(q => q.soru).slice(-3).join(' || ');
 
-  const prompt = `Sen bir DGS (Dikey Geçiş Sınavı) hazırlık öğretmenisin. ${subjectMap[quiz.subject]} konusundan ÇOK KESİN VE NET bir çoktan seçmeli soru üret.
-
-Yanıtını SADECE şu JSON formatında ver (başka hiçbir şey yazma):
-{
-  "soru": "Soru metni burada",
-  "secenekler": ["A şıkkı", "B şıkkı", "C şıkkı", "D şıkkı"],
-  "dogru": 0,
-  "aciklama": "Kısa ve net açıklama (max 2 cümle)"
-}
-
-dogru: doğru şıkkın index'i (0=A, 1=B, 2=C, 3=D)
-Soru gerçekçi DGS seviyesinde olsun. Yanıt kesinlikle sadece JSON olsun.`;
+  const prompt = `Sen bir DGS hazırlık öğretmenisin. Konu: ${randomTopic}, Zorluk: ${difficulty}, Seed: ${seed}. ${prevQ ? 'Bu soruları TEKRAR SORMA: ' + prevQ : ''} Tamamen FARKLI ve ÖZGÜN bir çoktan seçmeli soru üret. SADECE JSON: {"soru":"...","secenekler":["A","B","C","D"],"dogru":0,"aciklama":"..."}. dogru = doğru şıkkın index'i. Başka hiçbir şey yazma.`;
 
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
